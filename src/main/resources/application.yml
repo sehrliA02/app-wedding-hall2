@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/restaurant
+    username: postgres
+    password: 7410
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+    show-sql: true
+
+app:
+  user:
+    firstname: Alisher
+    phone: +998900787802
+    password: 123
+  role:
+    name: SUPER_ADMIN
+  jwt:
+    access:
+      expiration: 3600000
+      key: ae<k(eB';>~,-Q_-g:Ur!EzeO:1D@ogIKKybt#GfI~tT[KYx=k,&NJ3,C:Bc-8S
+    refresh:
+      expiration: 86400000
+      key: dG/]A&kh/Z=4~zoijQrxzdWSnboCpqRoM!(Av^~&@ic;fN1W^T.{"wK),jG"G!>
