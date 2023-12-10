@@ -2,7 +2,9 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/restaurant
     username: postgres
-    password: 7410
+    password: 4
+  redis:
+    url: jdbc:redis://monorail.proxy.rlwy.net:25869/0
 
   jpa:
     hibernate:
@@ -24,3 +26,12 @@ app:
     refresh:
       expiration: 86400000
       key: dG/]A&kh/Z=4~zoijQrxzdWSnboCpqRoM!(Av^~&@ic;fN1W^T.{"wK),jG"G!>
+
+token:
+  password: 9J33guwuE0yqhwyithrr2cOAkYIsAkdJ8oiNO3Fv
+  email: aliabdulloh01@mail.ru
+  base-url: https://notify.eskiz.uz
+  from: 4546
+  urls:
+    token-url: /api/auth/login
+    sms-send: /api/message/sms/send

@@ -44,7 +44,8 @@ public class InitialDataLoader implements CommandLineRunner {
         superAdminRole.setPermissions(permissions);
 
         roleRepository.save(superAdminRole);
-
+//  Databaseda USER role bo'lishi uchun
+       roleRepository.save(new Role("USER",List.of()));
         User user = propertyMapper.getUser();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setEnabled(true);

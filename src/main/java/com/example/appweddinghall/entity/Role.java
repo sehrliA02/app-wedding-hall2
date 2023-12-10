@@ -1,7 +1,6 @@
 package com.example.appweddinghall.entity;
 
 import com.example.appweddinghall.entity.template.AbsAuditingEntity;
-import com.example.appweddinghall.enums.PermissionEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;

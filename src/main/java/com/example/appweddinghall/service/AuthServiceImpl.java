@@ -10,7 +10,7 @@ import com.example.appweddinghall.repository.RoleRepository;
 import com.example.appweddinghall.repository.UserRepository;
 import com.example.appweddinghall.security.JWTProvider;
 import com.example.appweddinghall.security.Principle;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public record AuthServiceImpl(UserRepository userRepository,
@@ -26,13 +25,15 @@ public record AuthServiceImpl(UserRepository userRepository,
                               PasswordEncoder passwordEncoder,
                               RoleRepository roleRepository,
                               JWTProvider jwtProvider,
-                              CodeGenerateService codeGenerateService
-        /*SenderService senderService*/) implements AuthService, UserDetailsService {
+                              CodeGenerateService codeGenerateService,
+                              RedisTemplate<String, String> redisTemplate,
+                              SmsService smsService
+) implements AuthService, UserDetailsService {
 
     @Override
-    public ApiResponse<UUID> register(RegisterDTO registerDTO) {
+    public ApiResponse<String> register(RegisterDTO registerDTO) {
 
-        if (registerDTO.password().equals(registerDTO.prePassword()))
+        if (!registerDTO.password().equals(registerDTO.prePassword()))         //teng bo'lmasa xatolik bo'lishini aytdim
             throw new MyBadRequestException("Passwords are not equals");
 
         if (userRepository.existsByPhone(registerDTO.phone()))
@@ -40,26 +41,22 @@ public record AuthServiceImpl(UserRepository userRepository,
 
         User user = userMapper.toUserFromRegisterDTO(registerDTO);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(List.of(roleRepository.findByName("USER").orElseThrow()));
-        user.setCode(codeGenerateService.generate());
+        user.setRoles(List.of(roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found"))));   //USER da xatolik bo'lib qoldi!
         user.setEnabled(false);
 
         userRepository.save(user);
+        smsService.send(user.getPhone());
 
-        // todo :: send sms to phone number
-
-        return ApiResponse.success(user.getId(), "User saved successfully");
+        return ApiResponse.success(user.getPhone(), "User saved successfully");
     }
 
     @Override
-    public ApiResponse<TokenDTO> confirm(UUID id, String code) {
-        User user = userRepository.findById(id).orElseThrow(() -> new MyNotFoundException("User not found by id"));
+    public ApiResponse<TokenDTO> confirm(SmsDTO smsDTO) {
+
+        User user = userRepository.findByPhone(smsDTO.getTo()).orElseThrow(() -> new MyNotFoundException("User not found by id"));
 
         if (user.isEnabled())
             throw new MyBadRequestException("User already confirmed!");
-
-        if (!user.getCode().equals(code))
-            throw new MyBadRequestException("Code is wrong!");
 
         user.setEnabled(true);
         userRepository.save(user);
