@@ -1,7 +1,6 @@
 package com.example.appweddinghall.security;
 
 import com.example.appweddinghall.controller.AuthController;
-import com.example.appweddinghall.entity.User;
 import com.example.appweddinghall.repository.UserRepository;
 import com.example.appweddinghall.utils.AppConstant;
 import jakarta.servlet.FilterChain;

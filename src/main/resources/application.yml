@@ -12,8 +12,9 @@ spring:
 
 app:
   user:
-    firstname: Alisher
-    phone: +998900787802
+    firstname: Super
+    lastname: Admin
+    phone: 998900787802
     password: 123
   role:
     name: SUPER_ADMIN

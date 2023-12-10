@@ -25,6 +25,7 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(registry -> {
             registry.requestMatchers("/api/v1/auth" + "/**").permitAll();
             registry.requestMatchers("/test/open").permitAll();
+            registry.requestMatchers("/test/close").authenticated();
             registry.requestMatchers("/api/v1" + "/**").authenticated();
             registry.anyRequest().permitAll();
         });

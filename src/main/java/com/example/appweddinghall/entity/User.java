@@ -27,7 +27,7 @@ public class User extends AbsAuditingEntity {
 
     boolean enabled;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     List<Role> roles;
 
 

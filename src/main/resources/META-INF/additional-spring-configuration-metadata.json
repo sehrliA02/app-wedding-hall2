@@ -1,0 +1,28 @@
+{
+  "properties": [
+    {
+      "name": "app.user.firstname",
+      "type": "java.lang.String",
+      "description": "Description for app.user.firstname."
+    },
+    {
+      "name": "app.user.lastname",
+      "type": "java.lang.String",
+      "description": "Description for app.user.lastname."
+    },
+    {
+      "name": "app.user.phone",
+      "type": "java.lang.String",
+      "description": "Description for app.user.phone."
+    },
+    {
+      "name": "app.user.password",
+      "type": "java.lang.String",
+      "description": "Description for app.user.password."
+    },
+    {
+      "name": "app.role.name",
+      "type": "java.lang.String",
+      "description": "Description for app.role.name."
+    }
+  ] }

@@ -10,7 +10,6 @@ import com.example.appweddinghall.repository.RoleRepository;
 import com.example.appweddinghall.repository.UserRepository;
 import com.example.appweddinghall.security.JWTProvider;
 import com.example.appweddinghall.security.Principle;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,7 +31,7 @@ public record AuthServiceImpl(UserRepository userRepository,
     @Override
     public ApiResponse<UUID> register(RegisterDTO registerDTO) {
 
-        if (registerDTO.password().equals(registerDTO.prePassword()))
+        if (!registerDTO.password().equals(registerDTO.prePassword()))
             throw new MyBadRequestException("Passwords are not equals");
 
         if (userRepository.existsByPhone(registerDTO.phone()))
@@ -46,7 +45,7 @@ public record AuthServiceImpl(UserRepository userRepository,
 
         userRepository.save(user);
 
-        // todo :: send sms to phone number
+        // ::>>> send sms to phone number
 
         return ApiResponse.success(user.getId(), "User saved successfully");
     }
@@ -72,9 +71,10 @@ public record AuthServiceImpl(UserRepository userRepository,
 
     @Override
     public ApiResponse<TokenDTO> login(LoginDTO loginDTO) {
-        User user = userRepository.findByPhone(loginDTO.phone()).orElseThrow(() -> new MyNotFoundException("User not found by phone number"));
+        User user = userRepository.findByPhone(loginDTO.phone())
+                .orElseThrow(() -> new MyNotFoundException("User not found by phone number"));
 
-        if (passwordEncoder.matches(loginDTO.password(), user.getPassword()))
+        if (!passwordEncoder.matches(loginDTO.password(), user.getPassword()))
             throw new MyBadRequestException("Password is wrong!");
 
         String accessToken = jwtProvider.generateAccessToken(user.getId().toString());
