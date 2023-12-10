@@ -33,7 +33,7 @@ public record AuthServiceImpl(UserRepository userRepository,
     @Override
     public ApiResponse<String> register(RegisterDTO registerDTO) {
 
-        if (!registerDTO.password().equals(registerDTO.prePassword()))         //teng bo'lmasa xatolik bo'lishini aytdim
+        if (!registerDTO.password().equals(registerDTO.prePassword()))
             throw new MyBadRequestException("Passwords are not equals");
 
         if (userRepository.existsByPhone(registerDTO.phone()))

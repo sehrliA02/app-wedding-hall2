@@ -33,8 +33,8 @@ public class InitialDataLoader implements CommandLineRunner {
     private String ddl;
 
     @Override
-    public void run(String... args) throws Exception {
-        if (!"create".equals(ddl))
+    public void run(String... args) {
+        if (!ddl.startsWith("create"))
             return;
 
         List<Permission> permissionList = Arrays.stream(PermissionEnum.values()).map(Permission::new).toList();
@@ -42,10 +42,14 @@ public class InitialDataLoader implements CommandLineRunner {
 
         Role superAdminRole = propertyMapper.getRole();
         superAdminRole.setPermissions(permissions);
-
         roleRepository.save(superAdminRole);
-//  Databaseda USER role bo'lishi uchun
-       roleRepository.save(new Role("USER",List.of()));
+
+        // USER role
+        Role role = new Role();
+        role.setName("USER");
+        role.setPermissions(List.of());
+        roleRepository.save(role);
+
         User user = propertyMapper.getUser();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setEnabled(true);

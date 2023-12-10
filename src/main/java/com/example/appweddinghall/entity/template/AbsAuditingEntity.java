@@ -1,6 +1,7 @@
 package com.example.appweddinghall.entity.template;
 
 import com.example.appweddinghall.entity.User;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import lombok.AccessLevel;
@@ -17,11 +18,11 @@ import org.springframework.data.annotation.LastModifiedBy;
 public abstract class AbsAuditingEntity extends AbsTimeEntity {
 
     @CreatedBy
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     User createdBy;
 
     @LastModifiedBy
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     User updatedBy;
 
 }
