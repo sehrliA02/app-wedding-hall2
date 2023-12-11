@@ -2,13 +2,11 @@ package com.example.appweddinghall.service;
 
 import com.example.appweddinghall.payload.*;
 
-import java.util.UUID;
-
 public interface AuthService {
 
-    ApiResponse<UUID> register(RegisterDTO registerDTO);
+    ApiResponse<String> register(RegisterDTO registerDTO);
 
-    ApiResponse<TokenDTO> confirm(UUID id, String code);
+    ApiResponse<TokenDTO> confirm(SmsDTO smsDTO);
 
     ApiResponse<TokenDTO> login(LoginDTO loginDTO);
 

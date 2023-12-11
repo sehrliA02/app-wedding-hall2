@@ -10,6 +10,7 @@ import com.example.appweddinghall.repository.RoleRepository;
 import com.example.appweddinghall.repository.UserRepository;
 import com.example.appweddinghall.security.JWTProvider;
 import com.example.appweddinghall.security.Principle;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public record AuthServiceImpl(UserRepository userRepository,
@@ -25,11 +25,13 @@ public record AuthServiceImpl(UserRepository userRepository,
                               PasswordEncoder passwordEncoder,
                               RoleRepository roleRepository,
                               JWTProvider jwtProvider,
-                              CodeGenerateService codeGenerateService
-        /*SenderService senderService*/) implements AuthService, UserDetailsService {
+                              CodeGenerateService codeGenerateService,
+                              RedisTemplate<String, String> redisTemplate,
+                              SmsService smsService
+) implements AuthService, UserDetailsService {
 
     @Override
-    public ApiResponse<UUID> register(RegisterDTO registerDTO) {
+    public ApiResponse<String> register(RegisterDTO registerDTO) {
 
         if (!registerDTO.password().equals(registerDTO.prePassword()))
             throw new MyBadRequestException("Passwords are not equals");
@@ -39,26 +41,22 @@ public record AuthServiceImpl(UserRepository userRepository,
 
         User user = userMapper.toUserFromRegisterDTO(registerDTO);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(List.of(roleRepository.findByName("USER").orElseThrow()));
-        user.setCode(codeGenerateService.generate());
+        user.setRoles(List.of(roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role not found"))));   //USER da xatolik bo'lib qoldi!
         user.setEnabled(false);
 
         userRepository.save(user);
+        smsService.send(user.getPhone());
 
-        // ::>>> send sms to phone number
-
-        return ApiResponse.success(user.getId(), "User saved successfully");
+        return ApiResponse.success(user.getPhone(), "User saved successfully");
     }
 
     @Override
-    public ApiResponse<TokenDTO> confirm(UUID id, String code) {
-        User user = userRepository.findById(id).orElseThrow(() -> new MyNotFoundException("User not found by id"));
+    public ApiResponse<TokenDTO> confirm(SmsDTO smsDTO) {
+
+        User user = userRepository.findByPhone(smsDTO.getTo()).orElseThrow(() -> new MyNotFoundException("User not found by id"));
 
         if (user.isEnabled())
             throw new MyBadRequestException("User already confirmed!");
-
-        if (!user.getCode().equals(code))
-            throw new MyBadRequestException("Code is wrong!");
 
         user.setEnabled(true);
         userRepository.save(user);
@@ -71,10 +69,9 @@ public record AuthServiceImpl(UserRepository userRepository,
 
     @Override
     public ApiResponse<TokenDTO> login(LoginDTO loginDTO) {
-        User user = userRepository.findByPhone(loginDTO.phone())
-                .orElseThrow(() -> new MyNotFoundException("User not found by phone number"));
+        User user = userRepository.findByPhone(loginDTO.phone()).orElseThrow(() -> new MyNotFoundException("User not found by phone number"));
 
-        if (!passwordEncoder.matches(loginDTO.password(), user.getPassword()))
+        if (passwordEncoder.matches(loginDTO.password(), user.getPassword()))
             throw new MyBadRequestException("Password is wrong!");
 
         String accessToken = jwtProvider.generateAccessToken(user.getId().toString());

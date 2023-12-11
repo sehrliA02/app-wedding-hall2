@@ -30,7 +30,7 @@ public class JWTFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        if (!request.getRequestURI().startsWith(AuthController.Path.BASE)) {
+        if (request.getHeader("Authorization") != null && !request.getRequestURI().startsWith(AuthController.Path.BASE)) {
             String authorization = request.getHeader(AppConstant.AUTH_HEADER);
 
             if (authorization != null && authorization.startsWith(AppConstant.AUTH_TYPE)) {

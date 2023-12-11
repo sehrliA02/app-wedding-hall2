@@ -4,6 +4,7 @@ import com.example.appweddinghall.entity.template.AbsUUIDEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.*;
+import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 @EqualsAndHashCode(callSuper = true)

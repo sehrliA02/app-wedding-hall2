@@ -4,6 +4,7 @@ import com.example.appweddinghall.entity.template.AbsAuditingEntity;
 import com.example.appweddinghall.enums.GenderEnum;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
@@ -49,5 +50,4 @@ public class User extends AbsAuditingEntity {
     @OneToOne
     Attachment attachment;
 
-    String code;
 }

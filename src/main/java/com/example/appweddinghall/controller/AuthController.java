@@ -4,9 +4,8 @@ import com.example.appweddinghall.payload.*;
 import com.example.appweddinghall.utils.AppPathUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 import static com.example.appweddinghall.controller.AuthController.Path.*;
 
@@ -15,17 +14,18 @@ public interface AuthController {
     interface Path {
         String BASE = AppPathUtil.BASE + "/auth";
         String REGISTER = "/register";
-        String CONFIRM = "/confirm/{id}/{code}";
+        String CONFIRM = "/confirm";
         String LOGIN = "/login";
         String REFRESH_TOKEN = "/refresh-token";
     }
 
     @PostMapping(REGISTER)
-    HttpEntity<ApiResponse<UUID>> register(@Valid @RequestBody RegisterDTO registerDTO);
+    HttpEntity<ApiResponse<String>> register(@Valid @RequestBody RegisterDTO registerDTO);
 
     @PatchMapping(CONFIRM)
-    HttpEntity<ApiResponse<TokenDTO>> confirm(@PathVariable UUID id,
-                                              @PathVariable String code);
+    ResponseEntity<ApiResponse<TokenDTO>> confirm(@RequestBody @Valid SmsDTO smsDTO);
+
+
     @PostMapping(LOGIN)
     HttpEntity<ApiResponse<TokenDTO>> login(@Valid @RequestBody LoginDTO loginDTO);
 
